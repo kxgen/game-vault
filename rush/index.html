@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #game {
+            position: relative;
+            background-color: gainsboro;
+            width: 80%;
+            height: 200px;
+            overflow: hidden;
+        }
+        #player {
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: brown;
+        }
+        .bullet {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: teal;
+        }
+    </style>
+</head>
+<body>
+    <div>Player Score: <span class="score">0</span></div>
+    <div id="game">
+        <div id="player"></div>
+        <div class="bullet"></div>
+    </div>
+
+    <script>
+        const WINDOW_HEIGHT = 200
+        const GRAVITY = 0.6
+
+        const bullet = document.querySelector('.bullet')
+        const player = document.getElementById('player')
+        const scoreBoard = document.querySelector('.score')
+
+        let score = 0
+        let bulletx = 20
+        let playerY = 0 
+        let velocityY = 0
+
+        let isJumping = false
+        let isDucking = false
+        
+        function jump () {
+            if (!isJumping) {
+                velocityY = 10
+                isJumping = true
+            }
+        }
+
+        function updateScore () {
+            score++
+            scoreBoard.textContent = score
+        }
+
+        function updatePlayer () {
+            playerY += velocityY
+            velocityY -= GRAVITY
+
+            if(playerY <= 0) {
+                playerY = 0
+                velocityY = 0
+                isJumping = false
+            }
+            player.style.bottom = playerY + 'px'
+
+            requestAnimationFrame(updatePlayer)
+        }
+
+        updatePlayer(); // start the loop
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') jump();
+        });
+
+        function startDucking () {
+            player.style.height = 20 + 'px'
+        }
+
+        function stopDucking () {
+            player.style.height = 40 + 'px'
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') startDucking();
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowDown') stopDucking();
+        });
+
+        function moveBullet () {
+            bulletx += 5
+            bullet.style.right = bulletx + 'px'
+
+            if (bulletx > document.getElementById('game').offsetWidth) {
+                bulletx = -50
+                updateScore()
+            }
+            requestAnimationFrame(moveBullet);
+        }
+        moveBullet()
+        // document.addEventListener('keyup', (e) => {
+        //     if (e.key === 'ArrowUp') {
+        //         // call your jump or move function
+        //         moveBullet(); // for now just calling moveBullet as a test
+        //     }
+        // });
+    </script>
+</body>
+</html>
+
